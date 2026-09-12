@@ -81,3 +81,297 @@ Default output format: json
     type        = string
   }
   ```
+  3. terraform.tfvars -
+  ```
+  aws_region = "us-east-1"
+
+  project_name = "travelmemory"
+  
+  key_name = "travelmemory-key"
+  
+  my_ip = "YOUR_PUBLIC_IP/32"
+  ```
+  4. vpc.tf -
+  ```
+  # ---------------------------------------------------------
+  # VPC
+  # ---------------------------------------------------------
+  
+  resource "aws_vpc" "main" {
+    cidr_block           = var.vpc_cidr
+    enable_dns_support   = true
+    enable_dns_hostnames = true
+  
+    tags = {
+      Name = "${var.project_name}-vpc"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Public Subnet
+  # ---------------------------------------------------------
+  
+  resource "aws_subnet" "public" {
+    vpc_id                  = aws_vpc.main.id
+    cidr_block              = var.public_subnet_cidr
+    availability_zone       = "${var.aws_region}a"
+    map_public_ip_on_launch = true
+  
+    tags = {
+      Name = "${var.project_name}-public-subnet"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Private Subnet
+  # ---------------------------------------------------------
+  
+  resource "aws_subnet" "private" {
+    vpc_id            = aws_vpc.main.id
+    cidr_block        = var.private_subnet_cidr
+    availability_zone = "${var.aws_region}a"
+  
+    tags = {
+      Name = "${var.project_name}-private-subnet"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Internet Gateway
+  # ---------------------------------------------------------
+  
+  resource "aws_internet_gateway" "main" {
+    vpc_id = aws_vpc.main.id
+  
+    tags = {
+      Name = "${var.project_name}-igw"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Elastic IP for NAT Gateway
+  # ---------------------------------------------------------
+  
+  resource "aws_eip" "nat" {
+    domain = "vpc"
+  
+    tags = {
+      Name = "${var.project_name}-nat-eip"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # NAT Gateway
+  # NAT Gateway MUST be in the public subnet
+  # ---------------------------------------------------------
+  
+  resource "aws_nat_gateway" "main" {
+    allocation_id = aws_eip.nat.id
+    subnet_id     = aws_subnet.public.id
+  
+    depends_on = [
+      aws_internet_gateway.main
+    ]
+  
+    tags = {
+      Name = "${var.project_name}-nat"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Public Route Table
+  # ---------------------------------------------------------
+  
+  resource "aws_route_table" "public" {
+    vpc_id = aws_vpc.main.id
+  
+    route {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.main.id
+    }
+  
+    tags = {
+      Name = "${var.project_name}-public-route-table"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Public Route Table Association
+  # Connects Public Subnet → Public Route Table
+  # ---------------------------------------------------------
+  
+  resource "aws_route_table_association" "public" {
+    subnet_id      = aws_subnet.public.id
+    route_table_id = aws_route_table.public.id
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Private Route Table
+  # ---------------------------------------------------------
+  
+  resource "aws_route_table" "private" {
+    vpc_id = aws_vpc.main.id
+  
+    route {
+      cidr_block     = "0.0.0.0/0"
+      nat_gateway_id = aws_nat_gateway.main.id
+    }
+  
+    tags = {
+      Name = "${var.project_name}-private-route-table"
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # Private Route Table Association
+  # Connects Private Subnet → Private Route Table
+  # ---------------------------------------------------------
+  
+  resource "aws_route_table_association" "private" {
+    subnet_id      = aws_subnet.private.id
+    route_table_id = aws_route_table.private.id
+  }
+  ```
+  5. security_groups.tf
+  ```
+  # ============================================
+  # Web Server Security Group
+  # ============================================
+  
+  resource "aws_security_group" "web" {
+    name        = "${var.project_name}-web-sg"
+    description = "Security group for TravelMemory web/application server"
+    vpc_id      = aws_vpc.main.id
+  
+    # SSH - only from my public IP
+    ingress {
+      description = "SSH from my IP"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = [var.my_ip]
+    }
+  
+    # HTTP - allow users to access the application
+    ingress {
+      description = "HTTP access"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    # TravelMemory Backend
+    ingress {
+      description = "TravelMemory backend"
+      from_port   = 3001
+      to_port     = 3001
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    # Outbound traffic
+    egress {
+      description = "Allow all outbound traffic"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    tags = {
+      Name = "${var.project_name}-web-sg"
+    }
+  }
+  
+  
+  # ============================================
+  # Database / MongoDB Security Group
+  # ============================================
+  
+  resource "aws_security_group" "database" {
+    name        = "${var.project_name}-db-sg"
+    description = "Security group for TravelMemory MongoDB database"
+    vpc_id      = aws_vpc.main.id
+  
+    # MongoDB - ONLY accessible from the Web EC2
+    ingress {
+      description     = "MongoDB traffic from web server"
+      from_port       = 27017
+      to_port         = 27017
+      protocol        = "tcp"
+      security_groups = [aws_security_group.web.id]
+    }
+  
+    # Outbound traffic
+    egress {
+      description = "Allow all outbound traffic"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    tags = {
+      Name = "${var.project_name}-database-sg"
+    }
+  }
+  ```
+  6. iam.tf -
+  ```
+  # ---------------------------------------------------------
+  # IAM Role for EC2 Instances
+  # ---------------------------------------------------------
+  
+  resource "aws_iam_role" "ec2_role" {
+    name = "${var.project_name}-ec2-role"
+  
+    assume_role_policy = jsonencode({
+      Version = "2012-10-17"
+  
+      Statement = [
+        {
+          Effect = "Allow"
+  
+          Principal = {
+            Service = "ec2.amazonaws.com"
+          }
+  
+          Action = "sts:AssumeRole"
+        }
+      ]
+    })
+  
+    tags = {
+      Name    = "${var.project_name}-ec2-role"
+      Project = var.project_name
+    }
+  }
+  
+  
+  # ---------------------------------------------------------
+  # IAM Instance Profile
+  # ---------------------------------------------------------
+  # EC2 instances use the instance profile to assume the
+  # IAM role above.
+  
+  resource "aws_iam_instance_profile" "ec2_profile" {
+    name = "${var.project_name}-ec2-profile"
+    role = aws_iam_role.ec2_role.name
+  
+    tags = {
+      Name    = "${var.project_name}-ec2-profile"
+      Project = var.project_name
+    }
+  }
+  ```
+  7. 
