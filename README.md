@@ -59,6 +59,168 @@ interpreter_python = auto_silent
 WEB_PUBLIC_IP ansible_user=ubuntu
 
 [database]
-DATABASE_PRIVATE_IP ansible_user=ubuntu
+DATABASE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_common_args='-o ProxyJump=ubuntu@WEB_PUBLIC_IP'
 ```
-3. 
+3. Configure Ansible SSH Proxy: `nano ansible.cfg`
+```
+[defaults]
+inventory = inventory/hosts.ini
+remote_user = ubuntu
+host_key_checking = False
+private_key_file = ~/.ssh/SSH_KEY.pem
+interpreter_python = auto_silent
+```
+4. Test Ansible: `ansible web -m ping` - <img width="760" height="195" alt="image" src="https://github.com/user-attachments/assets/863b73c8-568d-4856-bd68-581ab8464285" />
+5. Test the database: `ansible database -m ping`
+6. Create the Web Server Playbook:
+```
+---
+- name: Configure TravelMemory Web Server
+  hosts: web
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - git
+          - build-essential
+          - nginx
+        state: present
+
+    - name: Install Node.js 20 repository
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      args:
+        creates: /etc/apt/sources.list.d/nodesource.list
+
+    - name: Install Node.js and NPM
+      apt:
+        name:
+          - nodejs
+        state: present
+        update_cache: true
+
+    - name: Verify Node.js
+      command: node --version
+      register: node_version
+      changed_when: false
+
+    - name: Display Node.js version
+      debug:
+        var: node_version.stdout
+
+    - name: Verify NPM
+      command: npm --version
+      register: npm_version
+      changed_when: false
+
+    - name: Display NPM version
+      debug:
+        var: npm_version.stdout
+
+    - name: Create application directory
+      file:
+        path: /opt/TravelMemory
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+
+    - name: Clone TravelMemory repository
+      git:
+        repo: "https://github.com/UnpredictablePrashant/TravelMemory.git"
+        dest: /opt/TravelMemory
+        version: main
+        force: true
+      become_user: ubuntu
+
+    - name: Install backend dependencies
+      npm:
+        path: /opt/TravelMemory/backend
+        production: false
+      become_user: ubuntu
+
+    - name: Install frontend dependencies
+      npm:
+        path: /opt/TravelMemory/frontend
+        production: false
+      become_user: ubuntu
+```
+7. Run the Web Server Playbook: `ansible-playbook playbooks/webserver.yml` - <img width="1457" height="116" alt="image" src="https://github.com/user-attachments/assets/eb6aae10-6186-4e68-9840-f243ef5b285f" />
+8. MongoDB Installation Playbook: `nano playbooks/database.yml`
+```
+---
+- name: Configure TravelMemory Database Server
+  hosts: database
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install MongoDB prerequisites
+      apt:
+        name:
+          - gnupg
+          - curl
+        state: present
+
+    - name: Download MongoDB signing key
+      get_url:
+        url: https://pgp.mongodb.com/server-8.0.asc
+        dest: /tmp/mongodb-server-8.0.asc
+        mode: "0644"
+
+    - name: Convert MongoDB signing key to keyring
+      command:
+        cmd: >
+          gpg --dearmor
+          --output /usr/share/keyrings/mongodb-server-8.0.gpg
+          /tmp/mongodb-server-8.0.asc
+      args:
+        creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+
+    - name: Add MongoDB repository
+      apt_repository:
+        repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse"
+        filename: mongodb-org-8.0
+        state: present
+
+    - name: Update apt cache after MongoDB repository
+      apt:
+        update_cache: true
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb-org
+        state: present
+
+    - name: Enable MongoDB
+      systemd:
+        name: mongod
+        enabled: true
+        state: started
+
+    - name: Check MongoDB service
+      command:
+        cmd: systemctl is-active mongod
+      register: mongodb_status
+      changed_when: false
+
+    - name: Display MongoDB status
+      debug:
+        var: mongodb_status.stdout
+```
+9. Run and check MongoDB Playbook: `ansible-playbook playbooks/database.yml`, `ansible database -a "systemctl status mongod --no-pager"`
+10. 
