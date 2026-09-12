@@ -34,4 +34,31 @@ Default output format: json
 ### Step 3:  Install Ansible
   1. Open and update Ubuntu - `sudo apt update`, `sudo apt upgrade -y`
   2. Install Ansible - `sudo apt install -y ansible` - <img width="1372" height="235" alt="image" src="https://github.com/user-attachments/assets/95e65832-5b59-41f7-a4da-23098629b75d" />
-  3. 
+  3. Install boto3 and botocore - `sudo apt install -y python3-boto3 python3-botocore`
+  4. Install and configure AWS Credentials in WSL - `sudo apt install -y awscli`, `aws configure`
+  5. Install Git - `sudo apt install -y git`
+  6. Create the Ansible Directory - `mkdir -p ~/TravelMemory/ansible/inventory`, `mkdir -p ~/TravelMemory/ansible/playbooks`, `mkdir -p ~/TravelMemory/ansible/templates`
+  7. Tree - `tree ~/TravelMemory` - <img width="582" height="210" alt="image" src="https://github.com/user-attachments/assets/72d9e67a-4403-4efd-8768-6beced83f334" />
+  8. Set Up Your Key and Copy the Key into WSL - `cp /mnt/c/Users/Administrator/Downloads/SSH_KEY.pem ~/.ssh/`
+  9. Fix SSH Key Permissions - `chmod 400 ~/.ssh/SSH_KEY.pem`
+  10. Test SSH to the Web EC2 -  `ssh -i ~/.ssh/SSH_KEY.pem ubuntu@44.200.32.208` - <img width="892" height="682" alt="image" src="https://github.com/user-attachments/assets/1d89d9ef-01ec-428b-a44b-534babd76267" />
+
+## Part 2: Configuration and Deployment with Ansible
+1. Create the configuration file: `nano ansible.cfg`
+```
+[defaults]
+inventory = inventory/hosts.ini
+remote_user = ubuntu
+host_key_checking = False
+private_key_file = ~/.ssh/SSH_KEY.pem
+interpreter_python = auto_silent
+```
+2. Create the Ansible Inventory: `nano inventory/hosts.ini`
+```
+[web]
+WEB_PUBLIC_IP ansible_user=ubuntu
+
+[database]
+DATABASE_PRIVATE_IP ansible_user=ubuntu
+```
+3. 
