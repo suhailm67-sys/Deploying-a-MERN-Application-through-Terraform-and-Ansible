@@ -16,14 +16,14 @@ Default output format: json
 ### Step 2:  Initialize a new Terraform project targeting AWS
 1. Create directory inside the main folder - `mkdir terraform` and `mkdir ansible`
 2. Go into Terraform and create the required terraform files
-  1. provider.tf -
-  2. variables.tf -
-  3. terraform.tfvars -
-  4. vpc.tf -
-  5. security_groups.tf
-  6. iam.tf -
-  7. ec2.tf -
-  8. outputs.tf -
+  - `provider.tf`:
+  - `variables.tf`:
+  - `terraform.tfvars`:
+  - `vpc.tf`:
+  - `security_groups.tf`:
+  - `iam.tf`:
+  - `ec2.tf`:
+  - `outputs.tf`:
 3. Initialize Terraform
   1. `terraform init` - <img width="1640" height="367" alt="image" src="https://github.com/user-attachments/assets/73cb5658-f9b6-4edb-bbfd-12df29122d2a" />
   2. `terraform fmt` and `terraform validate` - <img width="1685" height="82" alt="image" src="https://github.com/user-attachments/assets/48973e89-2604-455d-9dc1-13a0cfbb69d4" />
