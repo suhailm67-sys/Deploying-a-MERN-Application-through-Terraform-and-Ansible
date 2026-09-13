@@ -20,7 +20,7 @@ Default output format: json
   - `provider.tf`:
   - `variables.tf`:
   - `terraform.tfvars`:
-  - `vpc.tf`:
+  - `vpc.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/ec2.tf
   - `security_groups.tf`:
   - `iam.tf`:
   - `ec2.tf`:
