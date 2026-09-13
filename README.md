@@ -107,7 +107,7 @@ interpreter_python = auto_silent
       ]
     })
     ```
-  2. Create the TravelMemory application user:
+  - Create the TravelMemory application user:
     - Open MongoDB: `mongosh`
     - At the MongoDB prompt: `use travelmemory`
     - Create the TravelMemory application user:
@@ -120,7 +120,7 @@ interpreter_python = auto_silent
       ]
     })
     ```
-  3. Enable authentication: `sudo nano /etc/mongod.conf`
-  4. Add: `security:   authorization: enabled`
-  5. Restart: `sudo systemctl restart mongod` and verify: `sudo systemctl status mongod --no-pager`
+  - Enable authentication: `sudo nano /etc/mongod.conf`
+  - Add: `security:   authorization: enabled`
+  - Restart: `sudo systemctl restart mongod` and verify: `sudo systemctl status mongod --no-pager`
 12.
