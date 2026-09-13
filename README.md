@@ -17,14 +17,14 @@ Default output format: json
 1. Create directory inside the main folder - `mkdir terraform` and `mkdir ansible`
 
 2. Go into Terraform and create the required terraform files
-  - `provider.tf`:
-  - `variables.tf`:
-  - `terraform.tfvars`:
-  - `vpc.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/ec2.tf
-  - `security_groups.tf`:
-  - `iam.tf`:
-  - `ec2.tf`:
-  - `outputs.tf`:
+  - `provider.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/provider.tf
+  - `variables.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/variables.tf
+  - `terraform.tfvars`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/terraform.tfvars
+  - `vpc.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/vpc.tf
+  - `security_groups.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/security_groups.tf
+  - `iam.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/iam.tf
+  - `ec2.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/ec2.tf
+  - `outputs.tf`: https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/terraform/outputs.tf
 
 3. Initialize Terraform
   - `terraform init` - <img width="1640" height="367" alt="image" src="https://github.com/user-attachments/assets/73cb5658-f9b6-4edb-bbfd-12df29122d2a" />
@@ -70,10 +70,10 @@ interpreter_python = auto_silent
 2. Create the Ansible Inventory: `nano inventory/hosts.ini`
 ```
 [web]
-WEB_PUBLIC_IP ansible_user=ubuntu
+3.91.45.35 ansible_user=ubuntu
 
 [database]
-DATABASE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_common_args='-o ProxyJump=ubuntu@WEB_PUBLIC_IP'
+10.0.2.15 ansible_user=ubuntu ansible_host=travelmemory-database
 ```
 
 3. Configure Ansible SSH Proxy: `nano ansible.cfg`
@@ -90,11 +90,11 @@ interpreter_python = auto_silent
 
 5. Test the database: `ansible database -m ping` - <img width="830" height="185" alt="image" src="https://github.com/user-attachments/assets/c297e044-421d-46d1-b7ca-8a51abe9e0f0" />
 
-6. Create the Web Server Playbook: `nano playbooks/webserver.yml`
+6. Create the Web Server Playbook: `nano playbooks/webserver.yml` - https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/ansible/playbooks/webserver.yml
 
 7. Run the Web Server Playbook: `ansible-playbook playbooks/webserver.yml` - <img width="1512" height="72" alt="image" src="https://github.com/user-attachments/assets/65f09249-ec54-476e-9d24-ce783f0f933d" />
 
-8. MongoDB Installation Playbook: `nano playbooks/database.yml`
+8. MongoDB Installation Playbook: `nano playbooks/database.yml` - https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible/blob/main/ansible/playbooks/database.yml
 
 9. Run MongoDB Playbook: `ansible-playbook playbooks/database.yml` - <img width="1452" height="182" alt="image" src="https://github.com/user-attachments/assets/d145c905-3d3c-48bd-a630-b623f28fe0c3" />
 <img width="1462" height="377" alt="image" src="https://github.com/user-attachments/assets/33547e90-2bba-4b3c-8a66-ea4fb3e18726" />
