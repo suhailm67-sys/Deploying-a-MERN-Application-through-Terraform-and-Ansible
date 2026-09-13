@@ -1,0 +1,79 @@
+---
+- name: Configure TravelMemory Web Server
+  hosts: web
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - git
+          - build-essential
+          - nginx
+        state: present
+
+    - name: Install Node.js 20 repository
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      args:
+        creates: /etc/apt/sources.list.d/nodesource.list
+
+    - name: Install Node.js and NPM
+      apt:
+        name:
+          - nodejs
+        state: present
+        update_cache: true
+
+    - name: Verify Node.js
+      command: node --version
+      register: node_version
+      changed_when: false
+
+    - name: Display Node.js version
+      debug:
+        var: node_version.stdout
+
+    - name: Verify NPM
+      command: npm --version
+      register: npm_version
+      changed_when: false
+
+    - name: Display NPM version
+      debug:
+        var: npm_version.stdout
+
+    - name: Create application directory
+      file:
+        path: /opt/TravelMemory
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+
+    - name: Clone TravelMemory repository
+      git:
+        repo: "https://github.com/suhailm67-sys/Deploying-a-MERN-Application-through-Terraform-and-Ansible.git"
+        dest: /opt/TravelMemory
+        version: main
+        force: true
+      become_user: ubuntu
+
+    - name: Install backend dependencies
+      npm:
+        path: /opt/TravelMemory/backend
+        production: false
+      become_user: ubuntu
+
+    - name: Install frontend dependencies
+      npm:
+        path: /opt/TravelMemory/frontend
+        production: false
+      become_user: ubuntu

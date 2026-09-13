@@ -1,0 +1,64 @@
+---
+- name: Configure TravelMemory Database Server
+  hosts: database
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install MongoDB prerequisites
+      apt:
+        name:
+          - gnupg
+          - curl
+        state: present
+
+    - name: Download MongoDB signing key
+      get_url:
+        url: https://pgp.mongodb.com/server-8.0.asc
+        dest: /tmp/mongodb-server-8.0.asc
+        mode: "0644"
+
+    - name: Convert MongoDB signing key to keyring
+      command:
+        cmd: >
+          gpg --dearmor
+          --output /usr/share/keyrings/mongodb-server-8.0.gpg
+          /tmp/mongodb-server-8.0.asc
+      args:
+        creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+
+    - name: Add MongoDB repository
+      apt_repository:
+        repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse"
+        filename: mongodb-org-8.0
+        state: present
+
+    - name: Update apt cache after MongoDB repository
+      apt:
+        update_cache: true
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb-org
+        state: present
+
+    - name: Enable MongoDB
+      systemd:
+        name: mongod
+        enabled: true
+        state: started
+
+    - name: Check MongoDB service
+      command:
+        cmd: systemctl is-active mongod
+      register: mongodb_status
+      changed_when: false
+
+    - name: Display MongoDB status
+      debug:
+        var: mongodb_status.stdout
