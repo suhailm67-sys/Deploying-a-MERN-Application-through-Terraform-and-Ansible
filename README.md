@@ -92,6 +92,7 @@ interpreter_python = auto_silent
   - Find and change to: `bindIp: 127.0.0.1,10.0.2.15`
   - Restarte mongoDB: `sudo systemctl restart mongod`
   - Check: `sudo systemctl status mongod --no-pager` - <img width="1460" height="317" alt="image" src="https://github.com/user-attachments/assets/67c57ecf-db3c-4187-86c9-b7dd912e7a04" />
+  
 #### 11. Configure MongoDB authentication:
   1. Create the MongoDB administrator
     - On the database server: `mongosh`
