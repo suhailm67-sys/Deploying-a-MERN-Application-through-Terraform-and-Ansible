@@ -80,7 +80,7 @@ private_key_file = ~/.ssh/SSH_KEY.pem
 interpreter_python = auto_silent
 ```
 4. Test Ansible: `ansible web -m ping` - <img width="760" height="195" alt="image" src="https://github.com/user-attachments/assets/863b73c8-568d-4856-bd68-581ab8464285" />
-5. Test the database: `ansible database -m ping`
+5. Test the database: `ansible database -m ping` - <img width="830" height="185" alt="image" src="https://github.com/user-attachments/assets/c297e044-421d-46d1-b7ca-8a51abe9e0f0" />
 6. Create the Web Server Playbook:
 ```
 ---
