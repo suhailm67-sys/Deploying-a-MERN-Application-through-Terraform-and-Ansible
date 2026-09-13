@@ -101,7 +101,7 @@ interpreter_python = auto_silent
     ```
     db.createUser({
       user: "admin",
-      pwd: "CHANGE_THIS_TO_A_STRONG_PASSWORD",
+      pwd: "admin",
       roles: [
         { role: "root", db: "admin" }
       ]
@@ -114,7 +114,7 @@ interpreter_python = auto_silent
     ```
     db.createUser({
       user: "travelmemoryapp",
-      pwd: "CHANGE_THIS_TO_ANOTHER_STRONG_PASSWORD",
+      pwd: "Travel_Memory",
       roles: [
         { role: "readWrite", db: "travelmemory" }
       ]
@@ -127,4 +127,45 @@ interpreter_python = auto_silent
   - From the database server, check: `From the database server, check:` - <img width="1165" height="72" alt="image" src="https://github.com/user-attachments/assets/12319040-07a4-49ad-81fc-7365d16c4ea4" />
   - Connect to the Web server and run: `nc -zv 10.0.2.15 27017` - <img width="667" height="56" alt="image" src="https://github.com/user-attachments/assets/c03c88e8-d85c-4dd3-b755-c2953fc2fe9c" />
   - This confirms that Web EC2 → Private subnet → MongoDB network path is working.
-13. Configure the Web server with Ansible
+13. Configure the TravelMemory backend: 
+  - On the Web server: `On the Web server:` and then `cd /opt/TravelMemory/backend`
+  - Create .env: `MONGO_URI=mongodb://travelmemoryapp:Travel_Memory@10.0.2.15:27017/travelmemory?authSource=travelmemory  PORT=3001`
+  - Test the backend manually: `node index.js` - <img width="742" height="51" alt="image" src="https://github.com/user-attachments/assets/b03fba1d-9e2f-4092-89fa-ae2a5e2e9857" />
+  
+14. Run the backend permanently with PM2:
+  - On Web EC2: `cd /opt/TravelMemory/backend` and run: `cd /opt/TravelMemory/backend`
+  - Check: `pm2 status` - <img width="1085" height="212" alt="image" src="https://github.com/user-attachments/assets/1f2996b0-5178-4a2b-a370-8a68dc5e7eed" />
+  - Save it: `pm2 save` - <img width="1315" height="160" alt="image" src="https://github.com/user-attachments/assets/0ba45b06-3da7-4285-af80-b05a02c3294c" />
+  - Configure PM2 to start after reboot: `pm2 startup systemd` and save it - <img width="872" height="70" alt="image" src="https://github.com/user-attachments/assets/002b1f10-c400-475e-b913-ec81008eef62" />
+
+15. Configure React frontend
+  - On Web EC2: `cd /opt/TravelMemory/frontend` and `nano .env` - `REACT_APP_BACKEND_URL=`
+  - Then build it: `npm run build`
+  - Create: `sudo nano /etc/nginx/sites-available/travelmemory`
+  ```
+  server {
+      listen 80;
+      server_name _;
+  
+      root /opt/TravelMemory/frontend/build;
+      index index.html;
+  
+      location / {
+          try_files $uri /index.html;
+      }
+  
+      location /api/ {
+          proxy_pass http://127.0.0.1:3001/;
+          proxy_http_version 1.1;
+  
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+      }
+  }
+  ```
+  - Enable it: `sudo ln -s /etc/nginx/sites-available/travelmemory /etc/nginx/sites-enabled/travelmemory`
+  - Test: `sudo nginx -t` - <img width="1471" height="610" alt="image" src="https://github.com/user-attachments/assets/481c9830-075e-4e0e-9efc-b82efb9d2bdc" />
+
+16. 
