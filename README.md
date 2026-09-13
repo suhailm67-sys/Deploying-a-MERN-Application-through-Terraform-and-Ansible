@@ -123,4 +123,7 @@ interpreter_python = auto_silent
   - Enable authentication: `sudo nano /etc/mongod.conf`
   - Add: `security:   authorization: enabled`
   - Restart: `sudo systemctl restart mongod` and verify: `sudo systemctl status mongod --no-pager`
-12.
+12. Test Web → MongoDB connectivity:
+  - From the database server, check: `From the database server, check:` - <img width="1165" height="72" alt="image" src="https://github.com/user-attachments/assets/12319040-07a4-49ad-81fc-7365d16c4ea4" />
+  - Connect to the Web server and run: `nc -zv 10.0.2.15 27017` - <img width="667" height="56" alt="image" src="https://github.com/user-attachments/assets/c03c88e8-d85c-4dd3-b755-c2953fc2fe9c" />
+  - This confirms that Web EC2 → Private subnet → MongoDB network path is working.
