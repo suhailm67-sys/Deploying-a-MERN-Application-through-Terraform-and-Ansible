@@ -31,6 +31,15 @@ Default output format: json
   - `terraform apply` - <img width="1682" height="921" alt="image" src="https://github.com/user-attachments/assets/e9ff34bb-6164-4491-95a5-ec6cde07c475" /> <img width="1275" height="917" alt="image" src="https://github.com/user-attachments/assets/3213baa9-9e31-4ee2-9ee0-931a087b5191" />
   - `terraform output` - <img width="1661" height="190" alt="image" src="https://github.com/user-attachments/assets/25a9ed63-567b-402b-8a7a-44d0657ebfc6" />
 
+### Snapshots for reference from AWS console after completing Terraform:
+<img width="1627" height="242" alt="image" src="https://github.com/user-attachments/assets/f39d7f05-625f-4579-aa0d-031d877882c6" />
+<img width="1367" height="692" alt="image" src="https://github.com/user-attachments/assets/ea0bacd3-b15d-408d-a79f-b48725fd3668" />
+<img width="1537" height="747" alt="image" src="https://github.com/user-attachments/assets/1303420b-6610-445b-8176-aa8349663992" />
+<img width="1532" height="697" alt="image" src="https://github.com/user-attachments/assets/f47c636c-9106-4563-a3c3-a9054d60dd17" />
+<img width="1545" height="301" alt="image" src="https://github.com/user-attachments/assets/0d71b73f-1f87-491e-a3e3-448f626a801f" />
+<img width="1552" height="471" alt="image" src="https://github.com/user-attachments/assets/4f74572a-820a-4234-b9be-b2ee778efc35" />
+<img width="1572" height="542" alt="image" src="https://github.com/user-attachments/assets/116718c1-5e4c-4219-90c4-4cf390c7f4e1" />
+
 ### Step 3:  Install Ansible
   1. Open and update Ubuntu - `sudo apt update`, `sudo apt upgrade -y`
   2. Install Ansible - `sudo apt install -y ansible` - <img width="1372" height="235" alt="image" src="https://github.com/user-attachments/assets/95e65832-5b59-41f7-a4da-23098629b75d" />
