@@ -39,6 +39,7 @@ Default output format: json
 <img width="1545" height="301" alt="image" src="https://github.com/user-attachments/assets/0d71b73f-1f87-491e-a3e3-448f626a801f" />
 <img width="1552" height="471" alt="image" src="https://github.com/user-attachments/assets/4f74572a-820a-4234-b9be-b2ee778efc35" />
 <img width="1572" height="542" alt="image" src="https://github.com/user-attachments/assets/116718c1-5e4c-4219-90c4-4cf390c7f4e1" />
+<img width="1610" height="527" alt="image" src="https://github.com/user-attachments/assets/e24fd065-745a-4633-bf7d-2f77c9ce2622" />
 
 ### Step 3:  Install Ansible
   1. Open and update Ubuntu - `sudo apt update`, `sudo apt upgrade -y`
@@ -168,4 +169,7 @@ interpreter_python = auto_silent
   - Enable it: `sudo ln -s /etc/nginx/sites-available/travelmemory /etc/nginx/sites-enabled/travelmemory`
   - Test: `sudo nginx -t` - <img width="1471" height="610" alt="image" src="https://github.com/user-attachments/assets/481c9830-075e-4e0e-9efc-b82efb9d2bdc" />
 
-16. 
+16. Test the complete application:
+  - From WSL: `ssh travelmemory-web` and then from Windows browser open: `http://3.91.45.35/` - <img width="1900" height="952" alt="image" src="https://github.com/user-attachments/assets/41f07d97-f431-46a3-a4ac-afb9d8e923b5" />
+<img width="1910" height="402" alt="image" src="https://github.com/user-attachments/assets/3ed0d68e-35cf-4bd7-a415-3afb072fc4a5" />
+
