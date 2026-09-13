@@ -84,3 +84,42 @@ interpreter_python = auto_silent
 6. Create the Web Server Playbook: `nano playbooks/webserver.yml`
 7. Run the Web Server Playbook: `ansible-playbook playbooks/webserver.yml` - <img width="1512" height="72" alt="image" src="https://github.com/user-attachments/assets/65f09249-ec54-476e-9d24-ce783f0f933d" />
 8. MongoDB Installation Playbook: `nano playbooks/database.yml`
+9. Run MongoDB Playbook: `ansible-playbook playbooks/database.yml` - <img width="1452" height="182" alt="image" src="https://github.com/user-attachments/assets/d145c905-3d3c-48bd-a630-b623f28fe0c3" />
+<img width="1462" height="377" alt="image" src="https://github.com/user-attachments/assets/33547e90-2bba-4b3c-8a66-ea4fb3e18726" />
+10. Configure MongoDB to listen on the private interface:
+  - Connect: `ssh travelmemory-database`
+  - Open: `sudo nano /etc/mongod.conf`
+  - Find and change to: `bindIp: 127.0.0.1,10.0.2.15`
+  - Restarte mongoDB: `sudo systemctl restart mongod`
+  - Check: `sudo systemctl status mongod --no-pager` - <img width="1460" height="317" alt="image" src="https://github.com/user-attachments/assets/67c57ecf-db3c-4187-86c9-b7dd912e7a04" />
+11. Configure MongoDB authentication:
+  1. Create the MongoDB administrator
+    - On the database server: `mongosh`
+    - At the MongoDB prompt: `use admin`
+    - Create the administrator: 
+    ```
+    db.createUser({
+      user: "admin",
+      pwd: "CHANGE_THIS_TO_A_STRONG_PASSWORD",
+      roles: [
+        { role: "root", db: "admin" }
+      ]
+    })
+    ```
+  2. Create the TravelMemory application user:
+    - Open MongoDB: `mongosh`
+    - At the MongoDB prompt: `use travelmemory`
+    - Create the TravelMemory application user:
+    ```
+    db.createUser({
+      user: "travelmemoryapp",
+      pwd: "CHANGE_THIS_TO_ANOTHER_STRONG_PASSWORD",
+      roles: [
+        { role: "readWrite", db: "travelmemory" }
+      ]
+    })
+    ```
+  3. Enable authentication: `sudo nano /etc/mongod.conf`
+  4. Add: `security:   authorization: enabled`
+  5. Restart: `sudo systemctl restart mongod` and verify: `sudo systemctl status mongod --no-pager`
+12.
