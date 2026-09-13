@@ -15,6 +15,7 @@ Default output format: json
 ```
 ### Step 2:  Initialize a new Terraform project targeting AWS
 1. Create directory inside the main folder - `mkdir terraform` and `mkdir ansible`
+
 2. Go into Terraform and create the required terraform files
   - `provider.tf`:
   - `variables.tf`:
@@ -24,6 +25,7 @@ Default output format: json
   - `iam.tf`:
   - `ec2.tf`:
   - `outputs.tf`:
+
 3. Initialize Terraform
   - `terraform init` - <img width="1640" height="367" alt="image" src="https://github.com/user-attachments/assets/73cb5658-f9b6-4edb-bbfd-12df29122d2a" />
   - `terraform fmt` and `terraform validate` - <img width="1685" height="82" alt="image" src="https://github.com/user-attachments/assets/48973e89-2604-455d-9dc1-13a0cfbb69d4" />
@@ -64,6 +66,7 @@ host_key_checking = False
 private_key_file = ~/.ssh/SSH_KEY.pem
 interpreter_python = auto_silent
 ```
+
 2. Create the Ansible Inventory: `nano inventory/hosts.ini`
 ```
 [web]
@@ -72,6 +75,7 @@ WEB_PUBLIC_IP ansible_user=ubuntu
 [database]
 DATABASE_PRIVATE_IP ansible_user=ubuntu ansible_ssh_common_args='-o ProxyJump=ubuntu@WEB_PUBLIC_IP'
 ```
+
 3. Configure Ansible SSH Proxy: `nano ansible.cfg`
 ```
 [defaults]
@@ -81,13 +85,20 @@ host_key_checking = False
 private_key_file = ~/.ssh/SSH_KEY.pem
 interpreter_python = auto_silent
 ```
+
 4. Test Ansible: `ansible web -m ping` - <img width="760" height="195" alt="image" src="https://github.com/user-attachments/assets/863b73c8-568d-4856-bd68-581ab8464285" />
+
 5. Test the database: `ansible database -m ping` - <img width="830" height="185" alt="image" src="https://github.com/user-attachments/assets/c297e044-421d-46d1-b7ca-8a51abe9e0f0" />
+
 6. Create the Web Server Playbook: `nano playbooks/webserver.yml`
+
 7. Run the Web Server Playbook: `ansible-playbook playbooks/webserver.yml` - <img width="1512" height="72" alt="image" src="https://github.com/user-attachments/assets/65f09249-ec54-476e-9d24-ce783f0f933d" />
+
 8. MongoDB Installation Playbook: `nano playbooks/database.yml`
+
 9. Run MongoDB Playbook: `ansible-playbook playbooks/database.yml` - <img width="1452" height="182" alt="image" src="https://github.com/user-attachments/assets/d145c905-3d3c-48bd-a630-b623f28fe0c3" />
 <img width="1462" height="377" alt="image" src="https://github.com/user-attachments/assets/33547e90-2bba-4b3c-8a66-ea4fb3e18726" />
+
 10. Configure MongoDB to listen on the private interface:
   - Connect: `ssh travelmemory-database`
   - Open: `sudo nano /etc/mongod.conf`
@@ -125,10 +136,12 @@ interpreter_python = auto_silent
   - Enable authentication: `sudo nano /etc/mongod.conf`
   - Add: `security:   authorization: enabled`
   - Restart: `sudo systemctl restart mongod` and verify: `sudo systemctl status mongod --no-pager`
+
 12. Test Web → MongoDB connectivity:
   - From the database server, check: `From the database server, check:` - <img width="1165" height="72" alt="image" src="https://github.com/user-attachments/assets/12319040-07a4-49ad-81fc-7365d16c4ea4" />
   - Connect to the Web server and run: `nc -zv 10.0.2.15 27017` - <img width="667" height="56" alt="image" src="https://github.com/user-attachments/assets/c03c88e8-d85c-4dd3-b755-c2953fc2fe9c" />
   - This confirms that Web EC2 → Private subnet → MongoDB network path is working.
+
 13. Configure the TravelMemory backend: 
   - On the Web server: `On the Web server:` and then `cd /opt/TravelMemory/backend`
   - Create .env: `MONGO_URI=mongodb://travelmemoryapp:Travel_Memory@10.0.2.15:27017/travelmemory?authSource=travelmemory  PORT=3001`
@@ -173,6 +186,7 @@ interpreter_python = auto_silent
 16. Test the complete application:
   - From WSL: `ssh travelmemory-web` and then from Windows browser open: `http://3.91.45.35/` - <img width="1900" height="952" alt="image" src="https://github.com/user-attachments/assets/41f07d97-f431-46a3-a4ac-afb9d8e923b5" />
 <img width="1910" height="402" alt="image" src="https://github.com/user-attachments/assets/3ed0d68e-35cf-4bd7-a415-3afb072fc4a5" />
+
   - Since the application is working successfully, we can proceed with terminating the terraform: `terraform destroy` - <img width="910" height="122" alt="image" src="https://github.com/user-attachments/assets/0295477a-85a0-4ec2-a17c-8a12b2c6a273" />
 
 ### The application worked successfully on `http://3.91.45.35/` and all the required snapshots attached in the above as the proof of work.
