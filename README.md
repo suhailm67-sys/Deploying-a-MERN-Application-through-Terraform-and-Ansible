@@ -94,7 +94,7 @@ interpreter_python = auto_silent
   - Check: `sudo systemctl status mongod --no-pager` - <img width="1460" height="317" alt="image" src="https://github.com/user-attachments/assets/67c57ecf-db3c-4187-86c9-b7dd912e7a04" />
   
 11. Configure MongoDB authentication:
-  1. Create the MongoDB administrator
+  - Create the MongoDB administrator
     - On the database server: `mongosh`
     - At the MongoDB prompt: `use admin`
     - Create the administrator: 
