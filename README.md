@@ -35,6 +35,7 @@ Default output format: json
 <img width="1627" height="242" alt="image" src="https://github.com/user-attachments/assets/f39d7f05-625f-4579-aa0d-031d877882c6" />
 <img width="1367" height="692" alt="image" src="https://github.com/user-attachments/assets/ea0bacd3-b15d-408d-a79f-b48725fd3668" />
 <img width="1537" height="747" alt="image" src="https://github.com/user-attachments/assets/1303420b-6610-445b-8176-aa8349663992" />
+<img width="1641" height="730" alt="image" src="https://github.com/user-attachments/assets/aac37114-6be6-4c96-9130-b5a391f5312c" />
 <img width="1532" height="697" alt="image" src="https://github.com/user-attachments/assets/f47c636c-9106-4563-a3c3-a9054d60dd17" />
 <img width="1545" height="301" alt="image" src="https://github.com/user-attachments/assets/0d71b73f-1f87-491e-a3e3-448f626a801f" />
 <img width="1552" height="471" alt="image" src="https://github.com/user-attachments/assets/4f74572a-820a-4234-b9be-b2ee778efc35" />
@@ -172,4 +173,9 @@ interpreter_python = auto_silent
 16. Test the complete application:
   - From WSL: `ssh travelmemory-web` and then from Windows browser open: `http://3.91.45.35/` - <img width="1900" height="952" alt="image" src="https://github.com/user-attachments/assets/41f07d97-f431-46a3-a4ac-afb9d8e923b5" />
 <img width="1910" height="402" alt="image" src="https://github.com/user-attachments/assets/3ed0d68e-35cf-4bd7-a415-3afb072fc4a5" />
+  - Since the application is working successfully, we can proceed with terminating the terraform: `terraform destroy` - <img width="910" height="122" alt="image" src="https://github.com/user-attachments/assets/0295477a-85a0-4ec2-a17c-8a12b2c6a273" />
 
+### The application worked successfully on `http://3.91.45.35/` and all the required snapshots attached in the above as the proof of work.
+
+## Architecture diagram:
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/54977cc1-55bf-4caa-9dc5-3f37a930a0b7" />
