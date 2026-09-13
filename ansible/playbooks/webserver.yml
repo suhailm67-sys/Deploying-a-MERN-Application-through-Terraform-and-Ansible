@@ -19,36 +19,23 @@
           - nginx
         state: present
 
-    - name: Install Node.js 20 repository
+    - name: Install Node.js 20
       shell: |
         curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
       args:
         creates: /etc/apt/sources.list.d/nodesource.list
 
-    - name: Install Node.js and NPM
+    - name: Install Node.js
       apt:
-        name:
-          - nodejs
+        name: nodejs
         state: present
         update_cache: true
 
-    - name: Verify Node.js
-      command: node --version
-      register: node_version
-      changed_when: false
-
-    - name: Display Node.js version
-      debug:
-        var: node_version.stdout
-
-    - name: Verify NPM
-      command: npm --version
-      register: npm_version
-      changed_when: false
-
-    - name: Display NPM version
-      debug:
-        var: npm_version.stdout
+    - name: Install PM2
+      npm:
+        name: pm2
+        global: true
+        state: present
 
     - name: Create application directory
       file:
@@ -67,13 +54,31 @@
       become_user: ubuntu
 
     - name: Install backend dependencies
-      npm:
+      community.general.npm:
         path: /opt/TravelMemory/backend
         production: false
       become_user: ubuntu
 
     - name: Install frontend dependencies
-      npm:
+      community.general.npm:
         path: /opt/TravelMemory/frontend
         production: false
       become_user: ubuntu
+
+    - name: Verify Node.js
+      command: node --version
+      register: node_version
+      changed_when: false
+
+    - name: Display Node.js version
+      debug:
+        msg: "Node.js version: {{ node_version.stdout }}"
+
+    - name: Verify npm
+      command: npm --version
+      register: npm_version
+      changed_when: false
+
+    - name: Display npm version
+      debug:
+        msg: "npm version: {{ npm_version.stdout }}"
